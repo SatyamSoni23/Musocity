@@ -56,7 +56,7 @@
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:id="@+id/imagrViewGradient"
-            android:src="@drawable/gradient_bg"
+
             android:layout_alignParentBottom="true"/>
     </RelativeLayout>
     <TextView
@@ -92,8 +92,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:background="@drawable/gradient_bg"
-        android:layout_marginBottom="20dp">
+        android:background="@drawable/gradient_bg">
 
         <ImageView
             android:layout_width="35dp"
@@ -141,6 +140,36 @@
             android:layout_centerVertical="true"
             android:layout_alignParentRight="true"
             android:layout_marginRight="32dp"/>
-
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_above="@+id/relative_layout_for_bottom"
+        android:id="@+id/seek_bar_layout"
+        android:layout_marginBottom="15dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1:28"
+            android:id="@+id/durationPlayed"
+            android:textColor="@color/colorAccent"
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentLeft="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4:28"
+            android:id="@+id/durationTotal"
+            android:textColor="@color/colorAccent"
+            android:layout_marginRight="10dp"
+            android:layout_alignParentRight="true"/>
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_alignParentBottom="true"
+            />
     </RelativeLayout>
 </RelativeLayout>
