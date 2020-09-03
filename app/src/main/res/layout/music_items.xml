@@ -20,6 +20,13 @@
         android:layout_toRightOf="@id/music_img"
         android:layout_marginLeft="10dp"
         android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/menuMore"
         android:textColor="@color/colorAccent"/>
-
+    <ImageView
+        android:id="@+id/menuMore"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_baseline_more"
+        android:layout_alignParentRight="true"
+        android:padding="10dp"/>
 </RelativeLayout>
