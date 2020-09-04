@@ -28,9 +28,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static com.secure.musocity.AlbumDetailsAdapter.albumsFiles;
 import static com.secure.musocity.MainActivity.musicFiles;
 import static com.secure.musocity.MainActivity.repeatBoolean;
 import static com.secure.musocity.MainActivity.shuffleBoolean;
+import static com.secure.musocity.MusicAdapter.mFiles;
 
 public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnCompletionListener{
 
@@ -346,7 +348,13 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
 
     private void getIntentmMethod() {
         position = getIntent().getIntExtra("position",-1);
-        listSongs = musicFiles;
+        String sender = getIntent().getStringExtra("sender");
+        if(sender != null && sender.equals("albumDatails")){
+            listSongs = albumsFiles;
+        }
+        else{
+            listSongs = mFiles;
+        }
         if(listSongs != null){
             playPauseBtn.setImageResource(R.drawable.ic_pause);
             uri = Uri.parse(listSongs.get(position).getPath());
