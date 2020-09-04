@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:id="@+id/layout_top_btn"
-        android:background="@drawable/gradient_bg"
+        android:background="@drawable/gradient_br_reverse"
         android:layout_alignParentTop="true">
         <ImageView
             android:layout_width="30dp"
@@ -28,18 +28,19 @@
             android:text="Now Playing"
             android:textColor="@color/colorAccent"
             android:layout_toRightOf="@+id/back_btn"
-            android:layout_toLeftOf="@+id/menu_btn"
             android:gravity="center_horizontal"
             android:background="@android:color/transparent"
             android:textSize="18sp"
             android:textStyle="bold"/>
-        <ImageView
+            <!--android:layout_toLeftOf="@+id/menu_btn"/>-->
+        <!--<ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:id="@+id/menu_btn"
             android:src="@drawable/ic_menu"
+            android:layout_marginRight="10dp"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"/>-->
     </RelativeLayout>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -87,7 +88,7 @@
         android:layout_marginRight="40dp"/>
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="90dp"
         android:id="@+id/relative_layout_for_bottom"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
@@ -145,8 +146,7 @@
         android:layout_width="wrap_content"
         android:layout_height="60dp"
         android:layout_above="@+id/relative_layout_for_bottom"
-        android:id="@+id/seek_bar_layout"
-        android:layout_marginBottom="15dp">
+        android:id="@+id/seek_bar_layout">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -154,7 +154,8 @@
             android:id="@+id/durationPlayed"
             android:textColor="@color/colorAccent"
             android:layout_marginLeft="10dp"
-            android:layout_alignParentLeft="true"/>
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -162,7 +163,8 @@
             android:id="@+id/durationTotal"
             android:textColor="@color/colorAccent"
             android:layout_marginRight="10dp"
-            android:layout_alignParentRight="true"/>
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"/>
         <SeekBar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

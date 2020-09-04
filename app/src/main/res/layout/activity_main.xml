@@ -16,11 +16,10 @@
         app:tabTextColor="@color/colorAccent"
         app:tabIndicatorHeight="40dp"
         app:tabIndicatorColor="#fa3235"
-        app:tabIndicator="@drawable/tab_indicator"/>
+        app:tabIndicator="@drawable/tab_indicator" />
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        />
+        android:layout_height="match_parent"/>
 
 </LinearLayout>
