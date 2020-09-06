@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="90dp"
+    android:id="@+id/relative_layout_for_bottom"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentRight="true"
+    android:background="@drawable/gradient_bg"
+    tools:context=".Notification_Bar">
+
+    <ImageView
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:id="@+id/shuffle"
+        android:src="@drawable/ic_shuffle_off"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="32dp"/>
+
+    <ImageView
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:id="@+id/id_prev"
+        android:src="@drawable/ic_skip_previous"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@id/play_pause"
+        android:layout_marginRight="16dp"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/play_pause"
+        android:src="@drawable/ic_play"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:focusable="true"
+        android:clickable="true"
+        />
+
+    <ImageView
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:id="@+id/id_next"
+        android:src="@drawable/ic_skip_next"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/play_pause"
+        android:layout_marginLeft="16dp"/>
+
+    <ImageView
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:id="@+id/id_repeat"
+        android:src="@drawable/ic_repeat_off"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="32dp"/>
+</RelativeLayout>

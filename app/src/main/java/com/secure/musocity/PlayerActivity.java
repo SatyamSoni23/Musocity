@@ -8,7 +8,9 @@ import androidx.palette.graphics.Palette;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -24,6 +26,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.RemoteViews;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,13 +57,26 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
     private Handler handler = new Handler();
     private Thread playThread, prevThread, nextThread;
 
-    NotificationManager notificationManager;
+    private NotificationCompat.Builder builder;
+    private NotificationManager notificationManager;
+    private int notification_id;
+    private RemoteViews remoteViews;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
         initViews();
+        //-------------------------------------------------------------------
+        context = this;
+        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
+        builder = new NotificationCompat.Builder(this);
+        remoteViews = new RemoteViews(getPackageName(), R.layout.activity_notification__bar);
+        remoteViews.setImageViewResource(R.id.cover_art,R.mipmap.ic_launcher);
+        remoteViews.setTextViewText(R.id.song_name,"TEXT");
+
+        //-------------------------------------------------------------------
         getIntentmMethod();
         song_name.setText(listSongs.get(position).getTitle());
         artist_name.setText(listSongs.get(position).getArtist());
@@ -316,6 +332,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
 
     private void playPauseBtnClicked() {
         if(mediaPlayer.isPlaying()){
+            startNotification();
             playPauseBtn.setImageResource(R.drawable.ic_play);
             mediaPlayer.pause();
             seekBar.setMax(mediaPlayer.getDuration() / 1000);
@@ -331,6 +348,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
             });
         }
         else{
+            startNotification();
             playPauseBtn.setImageResource(R.drawable.ic_pause);
             mediaPlayer.start();
             seekBar.setMax(mediaPlayer.getDuration() / 1000);
@@ -345,6 +363,30 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
                 }
             });
         }
+        //-----------------------------------------------------------------------------------
+        notification_id = (int) System.currentTimeMillis();
+
+        Intent button_intent = new Intent("button_click");
+        button_intent.putExtra("id",notification_id);
+        PendingIntent button_pending_event = PendingIntent.getBroadcast(context,notification_id,
+                button_intent,0);
+
+        //remoteViews.setOnClickPendingIntent(R.id.button,button_pending_event);
+
+        Intent notification_intent = new Intent(context,MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context,0,notification_intent,0);
+
+        builder.setSmallIcon(R.mipmap.ic_launcher)
+                .setAutoCancel(true)
+                .setCustomBigContentView(remoteViews)
+                .setContentIntent(pendingIntent);
+
+        notificationManager.notify(notification_id,builder.build());
+        //--------------------------------------------------------------------------
+    }
+
+    private void startNotification() {
+
     }
 
     private String formattedTime(int mCurrentPosition) {

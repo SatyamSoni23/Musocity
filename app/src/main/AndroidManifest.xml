@@ -10,7 +10,8 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AlbumDetails"></activity>
+        <activity android:name=".Notification_Bar"></activity>
+        <activity android:name=".AlbumDetails" />
         <activity android:name=".PlayerActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
