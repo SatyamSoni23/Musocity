@@ -68,15 +68,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
         initViews();
-        //-------------------------------------------------------------------
-        context = this;
-        notificationManager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        builder = new NotificationCompat.Builder(this);
-        remoteViews = new RemoteViews(getPackageName(), R.layout.activity_notification__bar);
-        remoteViews.setImageViewResource(R.id.cover_art,R.mipmap.ic_launcher);
-        remoteViews.setTextViewText(R.id.song_name,"TEXT");
 
-        //-------------------------------------------------------------------
         getIntentmMethod();
         song_name.setText(listSongs.get(position).getTitle());
         artist_name.setText(listSongs.get(position).getArtist());
@@ -363,26 +355,6 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
                 }
             });
         }
-        //-----------------------------------------------------------------------------------
-        notification_id = (int) System.currentTimeMillis();
-
-        Intent button_intent = new Intent("button_click");
-        button_intent.putExtra("id",notification_id);
-        PendingIntent button_pending_event = PendingIntent.getBroadcast(context,notification_id,
-                button_intent,0);
-
-        //remoteViews.setOnClickPendingIntent(R.id.button,button_pending_event);
-
-        Intent notification_intent = new Intent(context,MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context,0,notification_intent,0);
-
-        builder.setSmallIcon(R.mipmap.ic_launcher)
-                .setAutoCancel(true)
-                .setCustomBigContentView(remoteViews)
-                .setContentIntent(pendingIntent);
-
-        notificationManager.notify(notification_id,builder.build());
-        //--------------------------------------------------------------------------
     }
 
     private void startNotification() {
