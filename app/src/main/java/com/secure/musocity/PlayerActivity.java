@@ -59,11 +59,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
     private Handler handler = new Handler();
     private Thread playThread, prevThread, nextThread;
 
-    private NotificationCompat.Builder builder;
-    private NotificationManager notificationManager;
-    private int notification_id;
-    private RemoteViews remoteViews;
-    private Context context;
+    static NotificationManager notificationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -540,7 +536,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
         }
     }
 
-    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+    public BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getExtras().getString("action_name");
@@ -554,16 +550,12 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
                 case CreateNotification.ACTION_NEXT:
                     nextBtnClicked();
                     break;
+                case CreateNotification.ACTION_SHUFFLE:
+                    break;
+                case CreateNotification.ACTION_REPEAT:
+                    break;
             }
         }
     };
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-            notificationManager.cancelAll();
-        }
-        unregisterReceiver(broadcastReceiver);
-    }
 }

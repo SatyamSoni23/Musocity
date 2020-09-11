@@ -17,14 +17,14 @@ public class CreateNotification {
     public static final String ACTION_PREVIOUS = "actionprevious";
     public static final String ACTION_PLAY = "actionplay";
     public static final String ACTION_NEXT = "actionnext";
+    public static final String ACTION_SHUFFLE = "actionshuffle";
+    public static final String ACTION_REPEAT = "actionrepeat";
 
     public static Notification notification;
     public static void createNotification(Context context, MusicFiles track, int  playbutton, int pos, int size){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
             MediaSessionCompat mediaSessionCompat = new MediaSessionCompat(context, "tag");
-            //Bitmap icon = BitmapFactory.decodeResource(context.getResources(), track.getImage());
-
 
             PendingIntent pendingIntentPrevious;
 
@@ -56,12 +56,25 @@ public class CreateNotification {
             pendingIntentNext = PendingIntent.getBroadcast(context, 0,
                     intentNext, PendingIntent.FLAG_UPDATE_CURRENT);
             drw_next = R.drawable.ic_skip_next_notification;
+             /*
+            int drw_shuffle;
+            Intent intentShuffle = new Intent(context, NotifiactionActionService.class)
+                    .setAction(ACTION_SHUFFLE);
+            PendingIntent pendingIntentShuffle = PendingIntent.getBroadcast(context, 0,
+                    intentShuffle, PendingIntent.FLAG_UPDATE_CURRENT);
+            drw_shuffle = R.drawable.ic_shuffle_off_notification;
 
-
-
+            int drw_repeat;
+            Intent intentRepeat = new Intent(context, NotifiactionActionService.class)
+                    .setAction(ACTION_REPEAT);
+            PendingIntent pendingIntentFRepeat = PendingIntent.getBroadcast(context, 0,
+                    intentRepeat, PendingIntent.FLAG_UPDATE_CURRENT);
+            drw_repeat = R.drawable.ic_repeat_off_notification;
+            */
             //create notifiaction
             notification = new NotificationCompat.Builder(context, CHANNEL_ID)
                     .setSmallIcon(R.drawable.logo)
+                    //.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.logo)) // set a png or jpg images
                     .setContentTitle(track.getTitle())
                     .setContentText(track.getArtist())
                     .setOnlyAlertOnce(true) //show notification for only first time
