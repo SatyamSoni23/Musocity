@@ -9,8 +9,10 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -68,11 +70,15 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
         initViews();
-
         getIntentmMethod();
         song_name.setText(listSongs.get(position).getTitle());
         artist_name.setText(listSongs.get(position).getArtist());
         mediaPlayer.setOnCompletionListener(this);
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            registerReceiver(broadcastReceiver, new IntentFilter("TRACK_TRACKS"));
+            startService(new Intent(getBaseContext(), OnclearFromRecentService.class));
+        }
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -185,6 +191,8 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
             mediaPlayer.setOnCompletionListener(this);
             playPauseBtn.setBackgroundResource(R.drawable.ic_pause);
             mediaPlayer.start();
+
+            CreateNotification.createNotification(PlayerActivity.this, listSongs.get(position), R.drawable.ic_pause, position, musicFiles.size()-1);
         }
         else{
             mediaPlayer.stop();
@@ -213,6 +221,8 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
             });
             mediaPlayer.setOnCompletionListener(this);
             playPauseBtn.setBackgroundResource(R.drawable.ic_play);
+
+            CreateNotification.createNotification(PlayerActivity.this, listSongs.get(position), R.drawable.ic_play, position, musicFiles.size()-1);
         }
     }
 
@@ -263,6 +273,8 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
             mediaPlayer.setOnCompletionListener(this);
             playPauseBtn.setBackgroundResource(R.drawable.ic_pause);
             mediaPlayer.start();
+
+            CreateNotification.createNotification(PlayerActivity.this, listSongs.get(position), R.drawable.ic_pause, position, musicFiles.size()-1);
         }
         else{
             mediaPlayer.stop();
@@ -293,6 +305,8 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
             });
             mediaPlayer.setOnCompletionListener(this);
             playPauseBtn.setBackgroundResource(R.drawable.ic_play);
+
+            CreateNotification.createNotification(PlayerActivity.this, listSongs.get(position), R.drawable.ic_play, position, musicFiles.size()-1);
         }
     }
 
@@ -311,6 +325,7 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
                     public void onClick(View v) {
                         playPauseBtnClicked();
                         //------------------------------------------------------------------------------
+                        CreateNotification.createNotification(PlayerActivity.this, listSongs.get(position), R.drawable.blank_img, position, musicFiles.size()-1);
                         /*if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
                             createChannel();
                         }*/
@@ -324,7 +339,6 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
 
     private void playPauseBtnClicked() {
         if(mediaPlayer.isPlaying()){
-            startNotification();
             playPauseBtn.setImageResource(R.drawable.ic_play);
             mediaPlayer.pause();
             seekBar.setMax(mediaPlayer.getDuration() / 1000);
@@ -338,9 +352,10 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
                     handler.postDelayed(this, 1000);
                 }
             });
+
+            CreateNotification.createNotification(PlayerActivity.this, listSongs.get(position), R.drawable.ic_play, position, musicFiles.size()-1);
         }
         else{
-            startNotification();
             playPauseBtn.setImageResource(R.drawable.ic_pause);
             mediaPlayer.start();
             seekBar.setMax(mediaPlayer.getDuration() / 1000);
@@ -354,11 +369,9 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
                     handler.postDelayed(this, 1000);
                 }
             });
+
+            CreateNotification.createNotification(PlayerActivity.this, listSongs.get(position), R.drawable.ic_pause, position, musicFiles.size()-1);
         }
-    }
-
-    private void startNotification() {
-
     }
 
     private String formattedTime(int mCurrentPosition) {
@@ -401,6 +414,8 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
         }
         seekBar.setMax(mediaPlayer.getDuration()/1000);
         metaData(uri);
+
+        CreateNotification.createNotification(PlayerActivity.this, listSongs.get(position), R.drawable.ic_pause, position, musicFiles.size()-1);
     }
 
     private void initViews(){
@@ -525,4 +540,30 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
         }
     }
 
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getExtras().getString("action_name");
+            switch (action){
+                case CreateNotification.ACTION_PREVIOUS:
+                    prevBtnClicked();
+                    break;
+                case CreateNotification.ACTION_PLAY:
+                    playPauseBtnClicked();
+                    break;
+                case CreateNotification.ACTION_NEXT:
+                    nextBtnClicked();
+                    break;
+            }
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            notificationManager.cancelAll();
+        }
+        unregisterReceiver(broadcastReceiver);
+    }
 }
