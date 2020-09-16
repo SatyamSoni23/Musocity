@@ -57,35 +57,58 @@
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:id="@+id/imagrViewGradient"
-
             android:layout_alignParentBottom="true"/>
     </RelativeLayout>
+    <ImageView
+        android:id="@+id/gif_image"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/card"
+        android:layout_above="@id/seek_bar_layout"
+        android:src="@drawable/gvoice"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="20dp"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="This is song Name"
         android:id="@+id/song_name"
         android:layout_below="@+id/card"
+        android:layout_toRightOf="@+id/gif_image"
+        android:layout_toLeftOf="@id/activate_vr"
         android:textColor="@color/colorAccent"
         android:gravity="center_horizontal"
-        android:textSize="22sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         android:ellipsize="end"
-        android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp"/>
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="This is song Artist"
         android:id="@+id/song_artist"
         android:layout_below="@+id/song_name"
+        android:layout_toRightOf="@+id/gif_image"
+        android:layout_toLeftOf="@id/activate_vr"
         android:textColor="@color/colorAccent"
         android:gravity="center_horizontal"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:textStyle="bold"
         android:ellipsize="end"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="40dp"/>
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="14dp"/>
+    <ImageView
+        android:id="@+id/activate_vr"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/card"
+        android:layout_above="@id/seek_bar_layout"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/ic_baseline_mic_off_24"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="90dp"

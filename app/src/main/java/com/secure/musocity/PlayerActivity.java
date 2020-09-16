@@ -3,8 +3,10 @@ package com.secure.musocity;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 import androidx.palette.graphics.Palette;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -13,6 +15,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -23,6 +26,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
+import android.speech.RecognitionListener;
+import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -45,7 +53,7 @@ import static com.secure.musocity.MainActivity.repeatBoolean;
 import static com.secure.musocity.MainActivity.shuffleBoolean;
 import static com.secure.musocity.MusicAdapter.mFiles;
 
-public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnCompletionListener{
+public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnCompletionListener, RecognitionListener {
 
     TextView song_name, artist_name, duration_played, duration_total;
     ImageView nextBtn, prevBtn, backBtn, shuffleBtn, repeatBtn;
@@ -58,6 +66,12 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
     static MediaPlayer mediaPlayer;
     private Handler handler = new Handler();
     private Thread playThread, prevThread, nextThread;
+    ImageView gif_image;
+    ImageView activate_vr;
+    boolean flag = false;
+    private SpeechRecognizer speech = null;
+    private Intent recognizerIntent;
+    private String LOG_TAG ="PlayerActivity";
 
     static NotificationManager notificationManager;
 
@@ -70,6 +84,24 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
         song_name.setText(listSongs.get(position).getTitle());
         artist_name.setText(listSongs.get(position).getArtist());
         mediaPlayer.setOnCompletionListener(this);
+        resetSpeechRecognizer();
+        activate_vr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!flag) {
+                    Glide.with(PlayerActivity.this).asGif().load(R.drawable.gvoice).into(gif_image);
+                    activate_vr.setImageResource(R.drawable.ic_baseline_mic_24);
+                    setRecogniserIntent();
+                    speech.startListening(recognizerIntent);
+                }
+                else{
+                    gif_image.setImageResource(R.drawable.gvoice);
+                    activate_vr.setImageResource(R.drawable.ic_baseline_mic_off_24);
+                    onPause();
+                }
+                flag = !flag;
+            }
+        });
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
             registerReceiver(broadcastReceiver, new IntentFilter("TRACK_TRACKS"));
@@ -133,12 +165,32 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
         });
     }
 
+    private void resetSpeechRecognizer(){
+        if(speech != null){
+            speech.destroy();
+        }
+        speech = SpeechRecognizer.createSpeechRecognizer(this);
+        Log.i(LOG_TAG, "isRecognitionAvailable: " + SpeechRecognizer.isRecognitionAvailable(this));
+        if(SpeechRecognizer.isRecognitionAvailable(this))
+            speech.setRecognitionListener(this);
+        else
+            finish();
+    }
+    private void setRecogniserIntent() {
+
+        recognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE,
+                "en");
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        recognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
+    }
+
     @Override
     protected void onResume() {
         playThreadBtn();
         nextThreadBtn();
         prevThreadBtn();
-
         super.onResume();
     }
 
@@ -427,6 +479,8 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
         repeatBtn = findViewById(R.id.id_repeat);
         playPauseBtn = findViewById(R.id.play_pause);
         seekBar = findViewById(R.id.seekBar);
+        gif_image = findViewById(R.id.gif_image);
+        activate_vr = findViewById(R.id.activate_vr);
     }
 
     private void metaData(Uri uri){
@@ -558,4 +612,129 @@ public class PlayerActivity extends AppCompatActivity implements MediaPlayer.OnC
         }
     };
 
+
+    //------------------------------------------------------------------------------------------------
+    @Override
+    protected void onPause() {
+        Log.i(LOG_TAG, "pause");
+        speech.cancel();
+        super.onPause();
+    }
+    @Override
+    protected void onStop() {
+        Log.i(LOG_TAG, "stop");
+        super.onStop();
+        if (speech != null) {
+            speech.destroy();
+        }
+    }
+    @Override
+    public void onReadyForSpeech(Bundle params) {
+        Log.i(LOG_TAG, "onReadyForSpeech");
+    }
+
+    @Override
+    public void onBeginningOfSpeech() {
+        Log.i(LOG_TAG, "onBeginningOfSpeech");
+    }
+
+    @Override
+    public void onRmsChanged(float rmsdB) {
+        Log.i(LOG_TAG, "onRmsChanged: " + rmsdB);
+    }
+
+    @Override
+    public void onBufferReceived(byte[] buffer) {
+        Log.i(LOG_TAG, "onBufferReceived: " + buffer);
+    }
+
+    @Override
+    public void onEndOfSpeech() {
+        Log.i(LOG_TAG, "onEndOfSpeech");
+        speech.stopListening();
+    }
+
+    @Override
+    public void onError(int errorCode) {
+        String errorMessage = getErrorText(errorCode);
+        Log.i(LOG_TAG, "FAILED " + errorMessage);
+
+        // rest voice recogniser
+        resetSpeechRecognizer();
+        speech.startListening(recognizerIntent);
+    }
+
+    @Override
+    public void onResults(Bundle results) {
+        Log.i(LOG_TAG, "onResults");
+        ArrayList<String> matches = results
+                .getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+        String text = "";
+        /*for (String result : matches)
+            text += result + "\n";*/
+        text = matches.get(0);
+
+        if(text.equals("next")){
+            nextBtnClicked();
+        }
+        else if(text.equals("play")){
+            if(!mediaPlayer.isPlaying())
+                playPauseBtnClicked();
+        }
+        else if(text.equals("pause")){
+            if(mediaPlayer.isPlaying())
+                playPauseBtnClicked();
+        }
+        else if(text.equals("previous")){
+            prevBtnClicked();
+        }
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+        speech.startListening(recognizerIntent);
+    }
+
+    @Override
+    public void onPartialResults(Bundle partialResults) {
+        Log.i(LOG_TAG, "onPartialResults");
+    }
+
+    @Override
+    public void onEvent(int eventType, Bundle params) {
+        Log.i(LOG_TAG, "onEvent");
+    }
+    public String getErrorText(int errorCode) {
+        String message;
+        switch (errorCode) {
+            case SpeechRecognizer.ERROR_AUDIO:
+                message = "Audio recording error";
+                break;
+            case SpeechRecognizer.ERROR_CLIENT:
+                message = "Client side error";
+                break;
+            case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+                message = "Insufficient permissions";
+                break;
+            case SpeechRecognizer.ERROR_NETWORK:
+                message = "Network error";
+                break;
+            case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
+                message = "Network timeout";
+                break;
+            case SpeechRecognizer.ERROR_NO_MATCH:
+                message = "No match";
+                break;
+            case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                message = "RecognitionService busy";
+                break;
+            case SpeechRecognizer.ERROR_SERVER:
+                message = "error from server";
+                break;
+            case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                message = "No speech input";
+                break;
+            default:
+                message = "Didn't understand, please try again.";
+                break;
+        }
+        return message;
+    }
 }

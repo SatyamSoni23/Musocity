@@ -8,5 +8,7 @@
         <item name="android:divider">@drawable/divider</item>
         <item name="android:dividerHeight">1px</item>
     </style>
-
+    <style name="SplashTheme" parent="AppTheme">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+    </style>
 </resources>
